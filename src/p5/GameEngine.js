@@ -1,19 +1,8 @@
-// src/p5/GameEngine.js (VERSI STABIL ULANG)
-
-// --- KONSTANTA GAME ---
-const GRAVITY = 0.8;
-const JUMP_STRENGTH = -15;
-const MARIO_SPEED = 5; 
-const MARIO_SIZE = 30; 
-const GROUND_Y = 300; 
-const CANVAS_W = 800; 
-const CANVAS_H = 400; 
-const BLOCK_SIZE = 40;
-
+// src/p5/GameEngine.js - VERSI INPUT P5.JS LANGSUNG
 export default class GameEngine {
     constructor(p, levelData, callbacks) {
         this.p = p;
-        this.questions = levelData;
+        this.questions = levelData || [];
         this.callbacks = callbacks; 
 
         // State Game
@@ -22,112 +11,135 @@ export default class GameEngine {
         this.isGameOver = false;
 
         // Karakter (Mario)
-        this.mario = { x: 50, y: GROUND_Y, vy: 0, isOnGround: true, dx: 0 }; 
+        this.mario = { 
+            x: 50, 
+            y: 300, 
+            vy: 0, 
+            isOnGround: true, 
+            dx: 0,
+            width: 30,
+            height: 30
+        }; 
+        
         this.blocks = [];
-        this.inputState = { left: false, right: false, jump: false }; 
 
-        this.p.setup = this.setup.bind(this);
-        this.p.draw = this.draw.bind(this);
-    }
-
-    // FUNGSI UNTUK MENERIMA INPUT DARI REACT
-    updateInputState(newInput) {
-        if (newInput) {
-            this.inputState = newInput;
-        }
+        // Constants
+        this.GRAVITY = 0.8;
+        this.JUMP_POWER = -15;
+        this.MOVE_SPEED = 5;
+        this.GROUND_Y = 300;
+        
+        console.log('🎮 GameEngine initialized - Using P5.js direct input');
     }
 
     setup() {
-        this.p.createCanvas(CANVAS_W, CANVAS_H);
-        this.p.textFont('Arial', 24);
+        console.log('🎯 GameEngine Setup');
         this.loadQuestion();
+    }
+
+    // METHOD INI TIDAK DIPAKAI LAGI - input dihandle langsung di update()
+    updateInputState(newInput) {
+        // Kosongkan - kita pakai input langsung dari p5.js
+    }
+
+    update() {
+        this.handleInput(); // Handle input langsung di p5.js
+        this.updateMario();
+        this.checkCollision();
+    }
+
+    handleInput() {
+        // RESET movement
+        this.mario.dx = 0;
+        
+        // HANDLE INPUT LANGSUNG dari p5.js
+        if (this.p.keyIsDown(this.p.RIGHT_ARROW) || this.p.keyIsDown(68)) { // D key
+            this.mario.dx = this.MOVE_SPEED;
+        }
+        if (this.p.keyIsDown(this.p.LEFT_ARROW) || this.p.keyIsDown(65)) { // A key
+            this.mario.dx = -this.MOVE_SPEED;
+        }
+        
+        // HANDLE JUMP - hanya sekali saat tombol ditekan
+        if ((this.p.keyIsDown(32) || this.p.keyIsDown(this.p.UP_ARROW) || this.p.keyIsDown(13)) && this.mario.isOnGround) {
+            this.mario.vy = this.JUMP_POWER;
+            this.mario.isOnGround = false;
+        }
+    }
+
+    updateMario() {
+        // APPLY gravity
+        this.mario.vy += this.GRAVITY;
+        
+        // UPDATE position
+        this.mario.y += this.mario.vy;
+        this.mario.x += this.mario.dx;
+
+        // GROUND collision
+        if (this.mario.y >= this.GROUND_Y) {
+            this.mario.y = this.GROUND_Y;
+            this.mario.vy = 0;
+            this.mario.isOnGround = true;
+        }
+
+        // SCREEN boundaries
+        this.mario.x = this.p.constrain(this.mario.x, 0, 800 - this.mario.width);
+    }
+
+    // ... method checkCollision, loadQuestion, draw tetap sama seperti sebelumnya ...
+    checkCollision() {
+        if (this.mario.vy >= 0) return;
+
+        for (let block of this.blocks) {
+            const collision = (
+                this.mario.x < block.x + 40 &&
+                this.mario.x + this.mario.width > block.x &&
+                this.mario.y < block.y + 40 &&
+                this.mario.y + this.mario.height > block.y
+            );
+            
+            if (collision) {
+                this.mario.vy = 0;
+                this.mario.y = block.y + 40;
+                
+                const currentQ = this.questions[this.questionIndex];
+                if (block.answer === currentQ.a) {
+                    this.score += 10;
+                    this.questionIndex++;
+                    if (this.callbacks.onScoreChange) this.callbacks.onScoreChange(this.score);
+                    this.loadQuestion();
+                } else {
+                    this.score = Math.max(0, this.score - 5);
+                    if (this.callbacks.onScoreChange) this.callbacks.onScoreChange(this.score);
+                }
+                break;
+            }
+        }
     }
 
     loadQuestion() {
         if (this.questionIndex >= this.questions.length) {
             this.isGameOver = true;
-            this.callbacks.onLevelComplete(this.score);
+            if (this.callbacks.onLevelComplete) this.callbacks.onLevelComplete(this.score);
             return;
         }
 
         const currentQ = this.questions[this.questionIndex];
-        const options = [...currentQ.options].sort(() => 0.5 - Math.random()); 
-
-        // Posisi Blok di tengah/kanan (HANYA SATU SET)
-        const startX = (CANVAS_W / 2) - BLOCK_SIZE * 1.5; 
+        const options = [...currentQ.options].sort(() => Math.random() - 0.5);
+        const startX = 400 - 60;
 
         this.blocks = [
-            { id: 0, x: startX, y: 150, answer: options[0] },
-            { id: 1, x: startX + BLOCK_SIZE * 1.5, y: 150, answer: options[1] },
-            { id: 2, x: startX + BLOCK_SIZE * 3, y: 150, answer: options[2] },
+            { x: startX, y: 150, answer: options[0] },
+            { x: startX + 80, y: 150, answer: options[1] },
+            { x: startX + 160, y: 150, answer: options[2] },
         ];
 
-        // Reset posisi Mario ke KIRI (x=50)
-        this.mario.x = 50; 
-        this.mario.y = GROUND_Y;
+        // Reset Mario
+        this.mario.x = 50;
+        this.mario.y = this.GROUND_Y;
         this.mario.vy = 0;
+        this.mario.dx = 0;
         this.mario.isOnGround = true;
-        this.mario.dx = 0;
-    }
-
-    updateMario() {
-        const input = this.inputState;
-        
-        this.mario.dx = 0;
-        if (input.right) {
-            this.mario.dx = MARIO_SPEED;
-        } else if (input.left) {
-            this.mario.dx = -MARIO_SPEED;
-        }
-
-        if (input.jump && this.mario.isOnGround) {
-            this.mario.vy = JUMP_STRENGTH;
-            this.mario.isOnGround = false;
-        }
-        
-        this.mario.vy += GRAVITY;
-        this.mario.y += this.mario.vy;
-        this.mario.x += this.mario.dx; 
-
-        if (this.mario.y >= GROUND_Y) {
-            this.mario.y = GROUND_Y;
-            this.mario.vy = 0;
-            this.mario.isOnGround = true;
-        }
-
-        if (this.mario.x < 0) {
-            this.mario.x = 0;
-        } else if (this.mario.x + MARIO_SIZE > CANVAS_W) {
-            this.mario.x = CANVAS_W - MARIO_SIZE;
-        }
-    }
-
-    checkCollision() {
-        if (this.mario.vy < 0) { 
-            this.blocks.forEach(block => {
-                const isColliding = (
-                    this.mario.x < block.x + BLOCK_SIZE &&
-                    this.mario.x + MARIO_SIZE > block.x &&
-                    this.mario.y < block.y + BLOCK_SIZE && 
-                    this.mario.y + MARIO_SIZE > block.y + BLOCK_SIZE 
-                );
-
-                if (isColliding) {
-                    this.mario.vy = 0; 
-                    
-                    const currentQ = this.questions[this.questionIndex];
-                    if (block.answer === currentQ.a) {
-                        this.score += 10;
-                        this.callbacks.onScoreChange(this.score);
-                        this.questionIndex++;
-                        this.loadQuestion();
-                    } else {
-                        this.score -= 5;
-                        this.callbacks.onScoreChange(this.score);
-                    }
-                }
-            });
-        }
     }
 
     draw() {
@@ -135,20 +147,19 @@ export default class GameEngine {
             this.p.background(0);
             this.p.fill(255);
             this.p.textAlign(this.p.CENTER, this.p.CENTER);
-            this.p.text('LEVEL SELESAI!', CANVAS_W / 2, CANVAS_H / 2);
+            this.p.textSize(32);
+            this.p.text('LEVEL SELESAI!', 400, 180);
+            this.p.textSize(24);
+            this.p.text(`Skor Akhir: ${this.score}`, 400, 220);
             return;
         }
 
-        this.p.background(92, 148, 252); 
-        
-        this.p.fill(150, 75, 0); 
-        this.p.rect(0, GROUND_Y + 30, CANVAS_W, CANVAS_H - GROUND_Y);
+        this.p.background(92, 148, 252);
+        this.p.fill(150, 75, 0);
+        this.p.rect(0, 330, 800, 70);
 
-        this.updateMario(); 
-        this.checkCollision();
-
-        this.p.fill(255, 0, 0); 
-        this.p.rect(this.mario.x, this.mario.y, MARIO_SIZE, MARIO_SIZE); 
+        this.p.fill(255, 0, 0);
+        this.p.rect(this.mario.x, this.mario.y, this.mario.width, this.mario.height);
 
         this.p.fill(255);
         this.p.textAlign(this.p.LEFT, this.p.TOP);
@@ -157,11 +168,11 @@ export default class GameEngine {
         this.p.text(`Skor: ${this.score}`, 10, 40);
 
         this.blocks.forEach(block => {
-            this.p.fill(255, 204, 0); 
-            this.p.rect(block.x, block.y, BLOCK_SIZE, BLOCK_SIZE);
+            this.p.fill(255, 204, 0);
+            this.p.rect(block.x, block.y, 40, 40);
             this.p.fill(0);
             this.p.textAlign(this.p.CENTER, this.p.CENTER);
-            this.p.text(block.answer, block.x + BLOCK_SIZE / 2, block.y + BLOCK_SIZE / 2);
+            this.p.text(block.answer, block.x + 20, block.y + 20);
         });
     }
 }

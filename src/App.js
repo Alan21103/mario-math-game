@@ -1,4 +1,3 @@
-// src/App.js (Ganti seluruh isinya dengan ini)
 import React, { useState, useCallback, useEffect } from 'react'; 
 import P5Canvas from './components/P5Canvas';
 import LevelSelect from './components/LevelSelect';
@@ -11,32 +10,58 @@ function App() {
   const [gameStatus, setGameStatus] = useState('Pilih Level'); 
   const [keyInput, setKeyInput] = useState({ left: false, right: false, jump: false }); 
   
-  // ... (Fungsi handleKeyDown, handleKeyUp, dan State management lainnya di sini) ...
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // HANYA handle ketika game sedang berjalan
       if (gameStatus !== 'Bermain') return;
-      if (e.key === ' ' || e.key === 'ArrowUp') {
-          e.preventDefault(); 
+      
+      // Prevent default HANYA untuk tombol yang digunakan dalam game
+      if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault(); 
       }
       
-      if (e.key === 'ArrowRight' || e.key === 'd') {
-        setKeyInput(prev => ({ ...prev, right: true }));
-      } else if (e.key === 'ArrowLeft' || e.key === 'a') {
-        setKeyInput(prev => ({ ...prev, left: true }));
-      } else if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowUp') {
-        setKeyInput(prev => ({ ...prev, jump: true }));
+      let updated = false;
+      let newState = { ...keyInput };
+
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        newState.right = true;
+        updated = true;
+      } 
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        newState.left = true;
+        updated = true;
+      } 
+      if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowUp') {
+        newState.jump = true;
+        updated = true;
+      }
+
+      if (updated) {
+        setKeyInput(newState);
       }
     };
 
     const handleKeyUp = (e) => {
       if (gameStatus !== 'Bermain') return;
       
-      if (e.key === 'ArrowRight' || e.key === 'd') {
-        setKeyInput(prev => ({ ...prev, right: false }));
-      } else if (e.key === 'ArrowLeft' || e.key === 'a') {
-        setKeyInput(prev => ({ ...prev, left: false }));
-      } else if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowUp') {
-        setKeyInput(prev => ({ ...prev, jump: false }));
+      let updated = false;
+      let newState = { ...keyInput };
+
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        newState.right = false;
+        updated = true;
+      } 
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        newState.left = false;
+        updated = true;
+      } 
+      if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowUp') {
+        newState.jump = false;
+        updated = true;
+      }
+
+      if (updated) {
+        setKeyInput(newState);
       }
     };
 
@@ -47,7 +72,7 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [gameStatus]); 
+  }, [gameStatus, keyInput]); // Tambah keyInput ke dependency
 
   const handleSelectLevel = (levelKey) => {
     setCurrentLevelKey(levelKey);
@@ -69,23 +94,20 @@ function App() {
     setCurrentLevelKey(null);
     setScore(0);
     setGameStatus('Pilih Level');
+    setKeyInput({ left: false, right: false, jump: false });
   }
 
   const levelData = currentLevelKey ? QUESTIONS[currentLevelKey] : [];
 
-
   return (
-    <div className="App" style={{ textAlign: 'center', fontFamily: 'sans-serif' }}>
+    <div className="App">
       <h1>🎓 Game Matematika P5.js & React</h1>
       
-      {currentLevelKey && gameStatus === 'Bermain' && (
-        <>
-          <h3>Level: {currentLevelKey.replace('_', ' ')} | Skor: {score}</h3> 
+      {gameStatus === 'Bermain' && (
+        <div className="game-screen">
+          <h3>Level: {currentLevelKey ? currentLevelKey.replace('_', ' ') : ''} | Skor: {score}</h3>
           
-          {/* Div container game: Pastikan tidak ada style inline yang membagi dua */}
-          <div className="game-container" style={{ display: 'inline-block' }}> 
-            
-            {/* HANYA SATU INSTANCE P5Canvas */}
+          <div className="game-container">
             <P5Canvas 
               levelData={levelData} 
               onScoreChange={handleScoreChange}
@@ -93,8 +115,12 @@ function App() {
               keyInput={keyInput} 
             />
           </div>
-          <p>Gunakan **Panah Kiri/Kanan (A/D)** untuk bergerak, **Spasi/Enter/Panah Atas** untuk melompat!</p>
-        </>
+          
+          <p className="controls-info">
+            Gunakan <strong>Panah Kiri/Kanan (A/D)</strong> untuk bergerak, 
+            <strong> Spasi/Enter/Panah Atas</strong> untuk melompat!
+          </p>
+        </div>
       )}
 
       {gameStatus === 'Pilih Level' && (
@@ -102,11 +128,10 @@ function App() {
       )}
 
       {gameStatus === 'Selesai' && (
-        <div style={{ marginTop: '20px' }}>
+        <div className="completion-screen">
           <h2>🎉 Level Selesai! 🎉</h2>
-          <p>Skor Akhir Anda: **{score}**</p>
-          <button onClick={handleRestart} 
-            style={{ padding: '10px 20px', fontSize: '18px' }}>
+          <p>Skor Akhir Anda: <strong>{score}</strong></p>
+          <button onClick={handleRestart}>
             Main Lagi
           </button>
         </div>

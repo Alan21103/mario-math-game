@@ -1,55 +1,211 @@
-/* ------------------------------- */
-/*  APP CONTAINER                  */
-/* ------------------------------- */
 .App {
   text-align: center;
-  font-family: Arial, sans-serif;
+  font-family: 'Arial', sans-serif;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* ------------------------------- */
-/*  P5 CANVAS CONTAINER            */
-/* ------------------------------- */
+/* Game Screen - Strict container dengan fixed dimensions */
+.game-screen {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Game Container - FIXED SIZE untuk mencegah duplikasi */
+.game-container {
+  display: block;
+  margin: 20px auto;
+  border: 3px solid #333;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: #f0f0f0;
+  width: 800px;
+  height: 400px;
+  position: relative;
+}
+
+/* P5 Canvas Container - STRICT RULES untuk satu canvas saja */
 .p5-canvas-container {
-  display: block;
-  line-height: 0;       /* Hilangkan whitespace */
-  overflow: hidden;     /* Mencegah overscroll/duplikasi */
-  width: fit-content;   /* Mengikuti ukuran asli canvas */
-  margin: 0 auto;       /* Center */
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 800px !important;
+  height: 400px !important;
+  position: relative;
+  overflow: hidden;
+  line-height: 0;
 }
 
-/* ------------------------------- */
-/*  P5 CANVAS ASLI (DARI P5.js)    */
-/* ------------------------------- */
+/* Canvas element - FORCE SINGLE INSTANCE */
 .p5-canvas-container canvas {
-  display: block;
-  margin: 0;
-  border: 2px solid black;
-
-  /* FIX PENTING! Biarkan ukuran asli dari P5.js */
-  width: auto !important;
-  height: auto !important;
-  max-width: none !important;
-  max-height: none !important;
-
-  /* Hindari scaling paksa */
-  box-sizing: content-box;
+  display: block !important;
+  margin: 0 auto !important;
+  width: 800px !important;
+  height: 400px !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
 }
 
-/* ------------------------------- */
-/*  BUTTON STYLE                   */
-/* ------------------------------- */
+/* Hapus semua canvas tambahan yang mungkin dibuat */
+.p5-canvas-container canvas:not(:first-child) {
+  display: none !important;
+}
+
+/* Level Select Styling */
+.level-select {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 50px auto;
+}
+
+.level-select h2 {
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+.level-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.controls-info {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #4CAF50;
+}
+
+.controls-info strong {
+  color: #333;
+}
+
+.completion-screen {
+  margin-top: 40px;
+  padding: 40px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.completion-screen h2 {
+  color: #4CAF50;
+  margin-bottom: 20px;
+  font-size: 32px;
+}
+
+.completion-screen p {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Button Styles */
 button {
   cursor: pointer;
-  background-color: #4CAF50;
+  background: linear-gradient(145deg, #4CAF50, #45a049);
   color: white;
   border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
+  border-radius: 8px;
+  padding: 15px 30px;
   margin: 10px;
   font-size: 16px;
-  transition: background-color 0.3s;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  min-width: 150px;
 }
 
 button:hover {
-  background-color: #45a049;
+  background: linear-gradient(145deg, #45a049, #4CAF50);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+button:active {
+  transform: translateY(-1px);
+}
+
+/* Level-specific button colors */
+.level-buttons button:nth-child(1) {
+  background: linear-gradient(145deg, #2196F3, #1976D2);
+}
+
+.level-buttons button:nth-child(2) {
+  background: linear-gradient(145deg, #FF9800, #F57C00);
+}
+
+.level-buttons button:nth-child(3) {
+  background: linear-gradient(145deg, #f44336, #d32f2f);
+}
+
+.level-buttons button:nth-child(1):hover {
+  background: linear-gradient(145deg, #1976D2, #2196F3);
+}
+
+.level-buttons button:nth-child(2):hover {
+  background: linear-gradient(145deg, #F57C00, #FF9800);
+}
+
+.level-buttons button:nth-child(3):hover {
+  background: linear-gradient(145deg, #d32f2f, #f44336);
+}
+
+/* Responsive Design */
+@media (max-width: 850px) {
+  .game-container {
+    width: 95%;
+    height: auto;
+    aspect-ratio: 2 / 1;
+  }
+  
+  .p5-canvas-container,
+  .p5-canvas-container canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100%;
+  }
+  
+  .game-screen {
+    margin: 10px;
+    padding: 15px;
+  }
+  
+  .level-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  button {
+    width: 200px;
+  }
+}
+
+/* Animation for game completion */
+@keyframes celebrate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.completion-screen {
+  animation: celebrate 0.5s ease-in-out;
 }

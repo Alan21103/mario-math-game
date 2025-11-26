@@ -1,47 +1,69 @@
-// src/components/P5Canvas.js (SOLUSI PENGHAPUSAN PAKSA)
 import React, { useRef, useEffect } from 'react';
 import p5 from 'p5';
 import GameEngine from '../p5/GameEngine';
 
 const P5Canvas = ({ levelData, onScoreChange, onLevelComplete, keyInput }) => { 
   const canvasRef = useRef(null);
-  const p5InstanceRef = useRef(null); // Ref untuk menyimpan instance GameEngine
+  const p5InstanceRef = useRef(null);
+  const gameEngineRef = useRef(null);
 
   useEffect(() => {
-    // 1. PASTIKAN SEMUA CANVAS LAMA DIHAPUS DULU
-    // P5.js menggunakan ID unik (misalnya 'defaultCanvas0', 'defaultCanvas1').
-    // Kita akan mencari dan menghapus elemen <canvas> apa pun yang sudah ada
-    // di dalam container ini sebelum membuat yang baru.
-    if (canvasRef.current) {
-        let existingCanvas = canvasRef.current.querySelector('canvas');
-        if (existingCanvas) {
-            existingCanvas.remove();
-        }
+    console.log('🎯 P5Canvas Mount - Level data:', levelData?.length);
+
+    // CLEANUP TOTAL sebelum membuat baru
+    if (p5InstanceRef.current) {
+      p5InstanceRef.current.remove();
+      p5InstanceRef.current = null;
     }
-    
-    // Inisialisasi P5.js dan GameEngine
-    const callbacks = { onScoreChange, onLevelComplete };
-    
-    // p.remove() akan membersihkan canvas dan event listeners saat komponen di-unmount
-    const sketch = new p5(p => {
-      p5InstanceRef.current = new GameEngine(p, levelData, callbacks);
-    }, canvasRef.current);
+    if (canvasRef.current) {
+      canvasRef.current.innerHTML = '';
+    }
+
+    // BUAT SKETCH P5.JS YANG SEDERHANA
+    const sketch = (p) => {
+      console.log('🎨 Creating p5 sketch');
+      
+      let gameEngine;
+
+      p.setup = () => {
+        console.log('⚙️ p5 setup called');
+        p.createCanvas(800, 400);
+        p.textFont('Arial', 24);
+        
+        // Buat GameEngine instance
+        gameEngine = new GameEngine(p, levelData, { onScoreChange, onLevelComplete });
+        gameEngineRef.current = gameEngine;
+        gameEngine.setup();
+      };
+
+      p.draw = () => {
+        if (gameEngine && !gameEngine.isGameOver) {
+          // UPDATE: Terima input langsung di setiap frame
+          gameEngine.updateInputState(keyInput);
+          gameEngine.update();
+          gameEngine.draw();
+        }
+      };
+    };
+
+    // BUAT P5 INSTANCE
+    p5InstanceRef.current = new p5(sketch, canvasRef.current);
 
     return () => {
-      // 2. Gunakan fungsi remove() bawaan P5.js saat komponen dilepas
-      sketch.remove();
+      if (p5InstanceRef.current) {
+        p5InstanceRef.current.remove();
+        p5InstanceRef.current = null;
+      }
+      gameEngineRef.current = null;
     };
-  }, [levelData, onScoreChange, onLevelComplete]); 
+  }, [levelData]); // HANYA levelData sebagai dependency
 
-  // Mengirim state input ke GameEngine SETIAP PERUBAHAN
-  useEffect(() => {
-    if (p5InstanceRef.current) {
-      p5InstanceRef.current.updateInputState(keyInput);
-    }
-  }, [keyInput]); 
-
-  // Berikan kelas yang ketat untuk styling
-  return <div ref={canvasRef} className="p5-canvas-container" />;
+  return (
+    <div 
+      ref={canvasRef} 
+      className="p5-canvas-container"
+    />
+  );
 };
 
 export default P5Canvas;
