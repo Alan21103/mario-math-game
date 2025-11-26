@@ -1,0 +1,83 @@
+/* Container Utama */
+.level-select-container {
+  font-family: 'Poppins', sans-serif; 
+  text-align: center;
+  padding: 40px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #e0f7fa, #ffffff); 
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  max-width: 550px;
+  margin: 50px auto;
+  animation: fadeIn 0.8s ease-out; 
+}
+
+/* Animasi Fade In */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Judul */
+.level-select-heading {
+  color: #007bff; 
+  margin-bottom: 10px;
+  font-size: 2.5em;
+  font-weight: 700;
+}
+
+/* Subteks */
+.level-select-subtext {
+  color: #6c757d;
+  margin-bottom: 35px;
+  font-size: 1.1em;
+}
+
+/* Grup Tombol */
+.level-buttons-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Gaya Dasar Tombol */
+.level-button {
+  padding: 18px 35px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+/* Efek HOVER: Mengangkat dan mengubah skala */
+.level-button:hover {
+  transform: translateY(-4px) scale(1.02); 
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Efek ACTIVE: Menekan tombol */
+.level-button:active {
+  transform: translateY(1px); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Gaya Spesifik Level: Mudah (Hijau) */
+.level-button.easy {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Gaya Spesifik Level: Sedang (Kuning/Oranye) */
+.level-button.medium {
+  background-color: #ffc107;
+  color: #343a40;
+}
+
+/* Gaya Spesifik Level: Sulit (Merah) */
+.level-button.hard {
+  background-color: #dc3545;
+  color: white;
+}

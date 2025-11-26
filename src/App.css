@@ -1,9 +1,29 @@
+/* 1. RESET CSS GLOBAL (MENGHILANGKAN MARGIN DEFAULT) */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%; 
+  width: 100%;
+  box-sizing: border-box; 
+  /* ✨ MODIFIKASI: Tambahkan overflow: hidden untuk MENGUNCI SCROLL */
+  overflow: hidden; 
+}
+
 .App {
   text-align: center;
   font-family: 'Arial', sans-serif;
-  min-height: 100vh;
+  min-height: 100vh; /* Memastikan App setinggi viewport */
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  
+  /* background: linear-gradient... DIHAPUS */
+  
+  /* Pastikan .App tidak memiliki background yang menutupi background gambar */
+  background: transparent;
+  
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
 }
 
 /* Game Screen - Strict container dengan fixed dimensions */

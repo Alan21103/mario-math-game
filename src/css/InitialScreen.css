@@ -1,0 +1,701 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* ===== VARIABLES & RESET ===== */
+:root {
+  --mario-red: #e52521;
+  --mario-blue: #049cd8;
+  --mario-yellow: #fbd000;
+  --mario-green: #43b047;
+  --mario-brown: #8b4513;
+  --mario-dark-green: #1a5a1a;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===== MAIN CONTAINER - FULL SCREEN ===== */
+.initial-screen-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Press Start 2P', cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #049cd8 0%, #67d1ff 100%);
+  top: 0;
+  left: 0;
+}
+
+/* ===== BACKGROUND LAYERS - FULL COVERAGE ===== */
+.bg-layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+/* Sky Base */
+.bg-sky {
+  background: linear-gradient(180deg, #049cd8 0%, #67d1ff 50%, #87ceeb 100%);
+  z-index: 1;
+}
+
+/* Mountains dengan CSS - Posisi Presisi */
+.bg-mountains {
+  z-index: 2;
+  animation: parallax-mountains 300s linear infinite;
+}
+
+.bg-mountains::before {
+  content: '';
+  position: absolute;
+  bottom: 150px;
+  left: 0;
+  width: 400%;
+  height: 200px;
+  background: 
+    /* Gunung besar kiri */
+    linear-gradient(75deg, transparent 30%, #2a6b2a 30%, #2a6b2a 35%, transparent 35%) 5% 100% / 400px 180px,
+    linear-gradient(105deg, transparent 30%, #1e5a1e 30%, #1e5a1e 35%, transparent 35%) 0% 100% / 350px 150px,
+    /* Gunung besar kanan */
+    linear-gradient(75deg, transparent 30%, #2a6b2a 30%, #2a6b2a 35%, transparent 35%) 85% 95% / 450px 200px,
+    linear-gradient(105deg, transparent 30%, #1e5a1e 30%, #1e5a1e 35%, transparent 35%) 80% 95% / 400px 170px,
+    /* Gunung tengah */
+    linear-gradient(75deg, transparent 30%, #3a7b3a 30%, #3a7b3a 35%, transparent 35%) 45% 100% / 300px 160px,
+    linear-gradient(105deg, transparent 30%, #2a6b2a 30%, #2a6b2a 35%, transparent 35%) 40% 100% / 250px 130px;
+  background-repeat: no-repeat;
+}
+
+/* Awan dengan Posisi yang Lebih Tersebar */
+.bg-clouds-1 {
+  z-index: 3;
+  animation: parallax-clouds-1 200s linear infinite;
+  opacity: 0.9;
+}
+
+.bg-clouds-1::before {
+  content: '';
+  position: absolute;
+  width: 150px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 70px;
+  filter: blur(3px);
+  top: 15%;
+  left: 5%;
+  box-shadow: 
+    200px 40px 0 60px rgba(255, 255, 255, 0.9),
+    450px 20px 0 50px rgba(255, 255, 255, 0.85),
+    700px 60px 0 70px rgba(255, 255, 255, 0.9),
+    950px 30px 0 55px rgba(255, 255, 255, 0.85);
+}
+
+.bg-clouds-2 {
+  z-index: 4;
+  animation: parallax-clouds-2 150s linear infinite;
+  opacity: 0.7;
+}
+
+.bg-clouds-2::before {
+  content: '';
+  position: absolute;
+  width: 120px;
+  height: 55px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 55px;
+  filter: blur(2px);
+  top: 25%;
+  left: 20%;
+  box-shadow: 
+    300px 50px 0 45px rgba(255, 255, 255, 0.75),
+    600px 25px 0 40px rgba(255, 255, 255, 0.7),
+    900px 45px 0 50px rgba(255, 255, 255, 0.75);
+}
+
+/* Trees dengan Distribusi yang Lebih Baik */
+.bg-trees {
+  z-index: 5;
+  animation: parallax-trees 100s linear infinite;
+}
+
+.bg-trees::before {
+  content: '';
+  position: absolute;
+  bottom: 150px;
+  left: 0;
+  width: 400%;
+  height: 120px;
+  background: 
+    /* Pattern pohon berulang */
+    linear-gradient(90deg, transparent 2%, var(--mario-dark-green) 2%, var(--mario-dark-green) 3%, transparent 3%) 0% 100% / 100px 80px,
+    linear-gradient(90deg, transparent 2%, var(--mario-green) 2%, var(--mario-green) 3%, transparent 3%) 0% 100% / 80px 60px,
+    linear-gradient(90deg, transparent 2%, var(--mario-dark-green) 2%, var(--mario-dark-green) 3%, transparent 3%) 8% 100% / 120px 100px,
+    linear-gradient(90deg, transparent 2%, var(--mario-green) 2%, var(--mario-green) 3%, transparent 3%) 8% 100% / 100px 80px,
+    linear-gradient(90deg, transparent 2%, var(--mario-dark-green) 2%, var(--mario-dark-green) 3%, transparent 3%) 18% 100% / 90px 70px,
+    linear-gradient(90deg, transparent 2%, var(--mario-green) 2%, var(--mario-green) 3%, transparent 3%) 18% 100% / 70px 50px;
+  background-repeat: repeat-x;
+}
+
+/* ===== CONTENT WRAPPER - POSISI AMAN ===== */
+.content-wrapper {
+  position: relative;
+  z-index: 20;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  border: 4px solid var(--mario-yellow);
+  box-shadow: 
+    0 0 40px rgba(251, 208, 0, 0.4),
+    inset 0 0 30px rgba(255, 255, 255, 0.1);
+  min-width: 500px;
+  margin: 0 auto;
+}
+
+/* ===== TITLE STYLES - LEBIH PRESISI ===== */
+.game-title-area {
+  position: relative;
+  margin-bottom: 2.5rem;
+}
+
+.title-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 110%;
+  height: 110%;
+  background: radial-gradient(circle, var(--mario-yellow) 0%, transparent 70%);
+  opacity: 0.2;
+  filter: blur(25px);
+  z-index: -1;
+}
+
+.game-title-top {
+  display: block;
+  font-size: 1.1rem;
+  color: var(--mario-yellow);
+  text-shadow: 3px 3px 0 var(--shadow-color);
+  margin-bottom: 1.2rem;
+  letter-spacing: 3px;
+  animation: text-glow 2s ease-in-out infinite alternate;
+}
+
+.game-title-main {
+  font-size: 3.2rem;
+  color: var(--mario-red);
+  text-shadow: 
+    4px 4px 0 var(--shadow-color),
+    8px 8px 0 rgba(0, 0, 0, 0.3);
+  margin-bottom: 1.5rem;
+  letter-spacing: 4px;
+  line-height: 1.2;
+  animation: title-bounce 0.6s ease infinite alternate;
+}
+
+.game-slogan {
+  font-size: 0.85rem;
+  color: white;
+  text-shadow: 2px 2px 0 var(--shadow-color);
+  margin-bottom: 3rem;
+  line-height: 1.8;
+  animation: fade-in-up 1.2s ease-out;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ===== BUTTON STYLES - POSISI TEPAT ===== */
+.start-button {
+  position: relative;
+  background: linear-gradient(145deg, var(--mario-red), #ff6b6b);
+  color: white;
+  border: none;
+  padding: 1.3rem 2.8rem;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.85rem;
+  border-radius: 55px;
+  cursor: pointer;
+  text-shadow: 2px 2px 0 var(--shadow-color);
+  box-shadow: 
+    0 8px 0 #8b0000,
+    0 15px 25px var(--shadow-color);
+  transition: all 0.2s ease;
+  overflow: hidden;
+  animation: pulse 2s infinite;
+  letter-spacing: 1px;
+}
+
+.start-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 11px 0 #8b0000,
+    0 18px 30px var(--shadow-color);
+}
+
+.start-button:active {
+  transform: translateY(6px);
+  box-shadow: 
+    0 2px 0 #8b0000,
+    0 5px 15px var(--shadow-color);
+}
+
+.btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  animation: btn-shine 3.5s infinite;
+}
+
+/* ===== ANIMATED ELEMENTS - POSISI PRESISI ===== */
+.animated-elements {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Floating Platforms dengan Posisi yang Tidak Mengganggu Konten */
+.floating-platform {
+  position: absolute;
+  width: 130px;
+  height: 32px;
+  background: linear-gradient(180deg, var(--mario-green), #2d8a2d);
+  border: 3px solid var(--mario-dark-green);
+  border-radius: 12px;
+  box-shadow: 
+    inset 0 -6px 0 rgba(0, 0, 0, 0.3),
+    0 6px 0 rgba(0, 0, 0, 0.4);
+}
+
+.platform-1 {
+  top: 25%;
+  left: 8%;
+  animation: float-1 5s ease-in-out infinite;
+}
+
+.platform-2 {
+  top: 45%;
+  right: 12%;
+  animation: float-2 4s ease-in-out infinite 0.5s;
+}
+
+.platform-3 {
+  top: 65%;
+  left: 15%;
+  animation: float-3 6s ease-in-out infinite 1s;
+}
+
+/* Coins dengan Efek yang Lebih Halus */
+.coin {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(circle at 35% 35%, var(--mario-yellow), #d4af37);
+  border-radius: 50%;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.4),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.3);
+  animation: coin-spin 1.8s linear infinite;
+}
+
+.coin::before {
+  content: '';
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  top: 5px;
+  left: 5px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+/* Characters dengan Posisi yang Tidak Overlap */
+.mario-character {
+  position: absolute;
+  bottom: 170px;
+  left: 12%;
+  width: 55px;
+  height: 75px;
+  background: 
+    linear-gradient(180deg, var(--mario-red) 32%, #2c2c2c 32%),
+    linear-gradient(180deg, #ffb6c1 50%, #2c2c2c 50%) 0 32px / 55px 43px;
+  background-repeat: no-repeat;
+  border-radius: 8px 8px 4px 4px;
+  animation: mario-jump 4s ease-in-out infinite;
+  z-index: 11;
+}
+
+.mario-character::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: #ffb6c1;
+  border-radius: 50%;
+  top: -8px;
+  left: 18px;
+  border: 2px solid var(--mario-red);
+}
+
+.goomba-character {
+  position: absolute;
+  bottom: 170px;
+  right: 18%;
+  width: 48px;
+  height: 38px;
+  background: #2c2c2c;
+  border-radius: 50% 50% 0 0;
+  animation: goomba-walk 5s ease-in-out infinite;
+  z-index: 11;
+}
+
+.goomba-character::before,
+.goomba-character::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+
+.goomba-character::before {
+  width: 14px;
+  height: 14px;
+  background: white;
+  top: 8px;
+  left: 8px;
+  box-shadow: 22px 0 0 0 white;
+}
+
+.goomba-character::after {
+  width: 8px;
+  height: 8px;
+  background: black;
+  top: 10px;
+  left: 10px;
+  box-shadow: 22px 0 0 0 black;
+}
+
+.luigi-character {
+  position: absolute;
+  bottom: 170px;
+  left: 25%;
+  width: 50px;
+  height: 70px;
+  background: 
+    linear-gradient(180deg, var(--mario-green) 32%, #2c2c2c 32%),
+    linear-gradient(180deg, #ffb6c1 50%, #2c2c2c 50%) 0 32px / 50px 38px;
+  background-repeat: no-repeat;
+  border-radius: 8px 8px 4px 4px;
+  animation: mario-jump 4.5s ease-in-out infinite 1s;
+  z-index: 11;
+}
+
+/* Ground Layer yang Lebih Detail */
+.ground-layer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 160px;
+  z-index: 12;
+}
+
+.grass-top {
+  height: 35px;
+  background: linear-gradient(180deg, var(--mario-green), var(--mario-dark-green));
+  border-bottom: 4px solid #164516;
+  position: relative;
+  overflow: hidden;
+}
+
+.grass-details {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 25px,
+      rgba(255, 255, 255, 0.1) 25px,
+      rgba(255, 255, 255, 0.1) 50px
+    );
+}
+
+.dirt-fill {
+  height: 125px;
+  background: linear-gradient(180deg, var(--mario-brown), #5a3a1a);
+  position: relative;
+}
+
+.dirt-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 20px,
+      rgba(0, 0, 0, 0.1) 20px,
+      rgba(0, 0, 0, 0.1) 40px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 15px,
+      rgba(0, 0, 0, 0.05) 15px,
+      rgba(0, 0, 0, 0.05) 30px
+    );
+}
+
+/* Additional Decorations */
+.bush {
+  position: absolute;
+  bottom: 160px;
+  width: 80px;
+  height: 40px;
+  background: var(--mario-green);
+  border-radius: 40px;
+  z-index: 11;
+}
+
+.bush-1 {
+  left: 60%;
+  width: 100px;
+  height: 45px;
+}
+
+.bush-2 {
+  right: 25%;
+  width: 70px;
+  height: 35px;
+}
+
+.pipe {
+  position: absolute;
+  bottom: 160px;
+  right: 8%;
+  width: 60px;
+  height: 80px;
+  background: linear-gradient(90deg, var(--mario-green), #2d8a2d);
+  border: 3px solid var(--mario-dark-green);
+  border-radius: 10px 10px 0 0;
+  z-index: 11;
+}
+
+/* Particles dengan Distribusi Lebih Baik */
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: var(--mario-yellow);
+  border-radius: 50%;
+  animation: particle-float 8s ease-in-out infinite;
+  box-shadow: 0 0 10px var(--mario-yellow);
+}
+
+/* ===== ANIMATIONS YANG LEBIH SMOOTH ===== */
+@keyframes parallax-mountains {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes parallax-clouds-1 {
+  from { transform: translateX(0); }
+  to { transform: translateX(-25%); }
+}
+
+@keyframes parallax-clouds-2 {
+  from { transform: translateX(0); }
+  to { transform: translateX(25%); }
+}
+
+@keyframes parallax-trees {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes text-glow {
+  from { text-shadow: 3px 3px 0 var(--shadow-color), 0 0 10px transparent; }
+  to { text-shadow: 3px 3px 0 var(--shadow-color), 0 0 20px var(--mario-yellow); }
+}
+
+@keyframes title-bounce {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(-8px) scale(1.02); }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+@keyframes btn-shine {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+@keyframes float-1 {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-25px) rotate(1deg); }
+}
+
+@keyframes float-2 {
+  0%, 100% { transform: translateY(0) rotate(1deg); }
+  50% { transform: translateY(-20px) rotate(-1deg); }
+}
+
+@keyframes float-3 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(0.5deg); }
+}
+
+@keyframes coin-spin {
+  0% { transform: translateX(-50%) rotateY(0) scale(1); }
+  50% { transform: translateX(-50%) rotateY(180deg) scale(1.1); }
+  100% { transform: translateX(-50%) rotateY(360deg) scale(1); }
+}
+
+@keyframes mario-jump {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-35px); }
+}
+
+@keyframes goomba-walk {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(-15px) translateY(-5px); }
+  50% { transform: translateX(-30px) translateY(0); }
+  75% { transform: translateX(-15px) translateY(-5px); }
+}
+
+@keyframes particle-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(-20px) rotate(45deg) scale(1);
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-150px) rotate(360deg) scale(0);
+    opacity: 0;
+  }
+}
+
+/* ===== RESPONSIVE DESIGN YANG LEBIH BAIK ===== */
+@media (max-width: 768px) {
+  .content-wrapper {
+    min-width: 90%;
+    padding: 2rem 1rem;
+    margin: 1rem;
+  }
+  
+  .game-title-main {
+    font-size: 2.2rem;
+  }
+  
+  .game-title-top {
+    font-size: 0.9rem;
+  }
+  
+  .game-slogan {
+    font-size: 0.75rem;
+    max-width: 300px;
+  }
+  
+  .start-button {
+    padding: 1rem 2rem;
+    font-size: 0.75rem;
+  }
+  
+  /* Adjust positions for mobile */
+  .platform-1 { left: 2%; top: 20%; }
+  .platform-2 { right: 2%; top: 40%; }
+  .platform-3 { left: 5%; top: 60%; }
+  
+  .mario-character { left: 5%; bottom: 160px; transform: scale(0.8); }
+  .goomba-character { right: 5%; bottom: 160px; transform: scale(0.8); }
+  .luigi-character { left: 15%; bottom: 160px; transform: scale(0.8); }
+}
+
+@media (max-width: 480px) {
+  .game-title-main {
+    font-size: 1.8rem;
+  }
+  
+  .game-title-top {
+    font-size: 0.8rem;
+  }
+  
+  .content-wrapper {
+    padding: 1.5rem 1rem;
+  }
+  
+  /* Hide some elements on very small screens */
+  .luigi-character,
+  .bush-2 {
+    display: none;
+  }
+}
+
+/* Ensure full coverage on all screens */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
