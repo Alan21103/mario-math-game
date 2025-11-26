@@ -1,38 +1,55 @@
+/* ------------------------------- */
+/*  APP CONTAINER                  */
+/* ------------------------------- */
 .App {
   text-align: center;
+  font-family: Arial, sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* ------------------------------- */
+/*  P5 CANVAS CONTAINER            */
+/* ------------------------------- */
+.p5-canvas-container {
+  display: block;
+  line-height: 0;       /* Hilangkan whitespace */
+  overflow: hidden;     /* Mencegah overscroll/duplikasi */
+  width: fit-content;   /* Mengikuti ukuran asli canvas */
+  margin: 0 auto;       /* Center */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* ------------------------------- */
+/*  P5 CANVAS ASLI (DARI P5.js)    */
+/* ------------------------------- */
+.p5-canvas-container canvas {
+  display: block;
+  margin: 0;
+  border: 2px solid black;
+
+  /* FIX PENTING! Biarkan ukuran asli dari P5.js */
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+
+  /* Hindari scaling paksa */
+  box-sizing: content-box;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+/* ------------------------------- */
+/*  BUTTON STYLE                   */
+/* ------------------------------- */
+button {
+  cursor: pointer;
+  background-color: #4CAF50;
   color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  transition: background-color 0.3s;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+button:hover {
+  background-color: #45a049;
 }
