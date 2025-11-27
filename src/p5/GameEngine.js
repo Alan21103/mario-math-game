@@ -1,10 +1,9 @@
 export default class GameEngine {
-    // 1. UPDATE CONSTRUCTOR: Tambah parameter 'sounds'
     constructor(p, levelData, callbacks, sounds, canvasWidth = 1000, canvasHeight = 600) {
         this.p = p;
         this.questions = levelData || [];
         this.callbacks = callbacks;
-        this.sounds = sounds || {}; // Menerima object sounds
+        this.sounds = sounds || {}; 
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
 
@@ -12,10 +11,12 @@ export default class GameEngine {
         this.score = 0;
         this.questionIndex = 0;
         this.isGameOver = false;
+        this.isLevelCompleted = false; // <<< STATUS BARU: Untuk membedakan Game Over dan Level Selesai
         this.lives = 3;
         this.coinsCollected = 0;
         this.isAnswering = false;
         this.lastAnswerFeedback = null;
+        this.levelCompletionTimer = null; // Untuk mengelola penundaan callback
 
         // --- Mario Character ---
         this.mario = {
@@ -68,15 +69,15 @@ export default class GameEngine {
         this.generateClouds();
         this.loadQuestion();
 
-        // 2. PLAY BGM
+        // PLAY BGM
         if (this.sounds.bgm && !this.sounds.bgm.isPlaying()) {
-            this.sounds.bgm.setVolume(0.5); // Volume background 50%
+            this.sounds.bgm.setVolume(0.5); 
             this.sounds.bgm.loop();
         }
     }
 
     createCachedAssets() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA - TIDAK ADA PERUBAHAN DI SINI) ...
+        // Assets for Cloud (Placeholder/simplified)
         const cw = 150;
         const ch = 100;
         this.assets.cloud = this.p.createGraphics(cw, ch);
@@ -86,6 +87,7 @@ export default class GameEngine {
         this.assets.cloud.ellipse(cw/2 - 30, ch/2 + 10, cw * 0.6, ch * 0.5);
         this.assets.cloud.ellipse(cw/2 + 30, ch/2 + 10, cw * 0.6, ch * 0.5);
 
+        // Assets for Block (Question Block)
         const bs = 50; 
         this.assets.block = this.p.createGraphics(bs, bs);
         const bg = this.assets.block;
@@ -111,7 +113,6 @@ export default class GameEngine {
     }
 
     generateLevel() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         this.platforms = [
             { x: this.canvasWidth * 0.15, y: this.canvasHeight * 0.6, width: this.canvasWidth * 0.15, height: 20 },
             { x: this.canvasWidth * 0.42, y: this.canvasHeight * 0.45, width: this.canvasWidth * 0.16, height: 20 },
@@ -124,7 +125,6 @@ export default class GameEngine {
     }
 
     generateCoins() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         this.coins = [];
         const coinPositions = [
             { x: this.canvasWidth * 0.2, y: this.canvasHeight * 0.5 },
@@ -141,7 +141,6 @@ export default class GameEngine {
     }
 
     generateClouds() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         this.clouds = [];
         for (let i = 0; i < 6; i++) {
             this.clouds.push({
@@ -154,14 +153,20 @@ export default class GameEngine {
     }
 
     loadQuestion() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         if (this.questionIndex >= this.questions.length) {
-            this.isGameOver = true;
-            if (this.callbacks.onLevelComplete) this.callbacks.onLevelComplete(this.score);
+            // Ketika semua soal selesai, kita set isGameOver, tapi isLevelCompleted
+            // akan diset di handleCorrectAnswer() agar ada delay.
+            this.isGameOver = true; 
             return;
         }
 
         this.currentQuestion = this.questions[this.questionIndex];
+        // Pastikan currentQuestion ada sebelum mencoba mengakses options
+        if (!this.currentQuestion || !this.currentQuestion.options) {
+             console.error("Data pertanyaan tidak valid pada index:", this.questionIndex);
+             return; 
+        }
+        
         this.currentOptions = [...this.currentQuestion.options].sort(() => Math.random() - 0.5);
 
         this.blocks = this.currentOptions.map((optionValue, index) => {
@@ -184,7 +189,8 @@ export default class GameEngine {
     }
 
     update() {
-        if (this.isGameOver) return;
+        if (this.isGameOver) return; // Hentikan update jika game over atau level completed
+        
         this.handleInput();
         this.updateMario();
         this.updateClouds();
@@ -210,7 +216,6 @@ export default class GameEngine {
     }
 
     drawEnvironment() {
-       // ... (KODE SAMA SEPERTI SEBELUMNYA - DRAW ENVIRONMENT) ...
        this.p.noStroke();
        this.p.fill(101, 67, 33);
        this.p.rect(0, this.GROUND_Y, this.SCREEN_WIDTH, this.SCREEN_HEIGHT - this.GROUND_Y);
@@ -220,34 +225,33 @@ export default class GameEngine {
        this.p.strokeWeight(2);
        this.p.line(0, this.GROUND_Y + 20, this.SCREEN_WIDTH, this.GROUND_Y + 20);
        this.platforms.forEach(p => {
-           this.p.fill(0, 0, 0, 50); 
-           this.p.noStroke();
-           this.p.rect(p.x + 5, p.y + 5, p.width, p.height, 4);
-           this.p.stroke(0); 
-           this.p.strokeWeight(2);
-           this.p.fill(210, 105, 30);
-           this.p.rect(p.x, p.y, p.width, p.height, 4);
-           this.p.fill(0); 
-           this.p.noStroke();
-           this.p.ellipse(p.x + 10, p.y + 10, 4);
-           this.p.ellipse(p.x + p.width - 10, p.y + 10, 4);
+            this.p.fill(0, 0, 0, 50); 
+            this.p.noStroke();
+            this.p.rect(p.x + 5, p.y + 5, p.width, p.height, 4);
+            this.p.stroke(0); 
+            this.p.strokeWeight(2);
+            this.p.fill(210, 105, 30);
+            this.p.rect(p.x, p.y, p.width, p.height, 4);
+            this.p.fill(0); 
+            this.p.noStroke();
+            this.p.ellipse(p.x + 10, p.y + 10, 4);
+            this.p.ellipse(p.x + p.width - 10, p.y + 10, 4);
        });
        this.pipes.forEach(pipe => {
-           this.p.fill(34, 177, 76);
-           this.p.stroke(0);
-           this.p.strokeWeight(2);
-           this.p.rect(pipe.x, pipe.y, pipe.width, pipe.height);
-           this.p.noStroke();
-           this.p.fill(100, 230, 100); 
-           this.p.rect(pipe.x + 5, pipe.y, 5, pipe.height);
-           this.p.stroke(0);
-           this.p.fill(34, 177, 76);
-           this.p.rect(pipe.x - 4, pipe.y, pipe.width + 8, 30);
+            this.p.fill(34, 177, 76);
+            this.p.stroke(0);
+            this.p.strokeWeight(2);
+            this.p.rect(pipe.x, pipe.y, pipe.width, pipe.height);
+            this.p.noStroke();
+            this.p.fill(100, 230, 100); 
+            this.p.rect(pipe.x + 5, pipe.y, 5, pipe.height);
+            this.p.stroke(0);
+            this.p.fill(34, 177, 76);
+            this.p.rect(pipe.x - 4, pipe.y, pipe.width + 8, 30);
        });
     }
 
     drawGameElements() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA - DRAW ELEMENTS) ...
         this.clouds.forEach(cloud => {
             if (this.assets.cloud) {
                 this.p.image(this.assets.cloud, cloud.x, cloud.y, cloud.size, cloud.size * 0.6);
@@ -289,7 +293,6 @@ export default class GameEngine {
     }
 
     drawUI() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA - DRAW UI) ...
         this.p.noStroke();
         this.p.fill(0, 0, 0, 80);
         this.p.rect(25, 25, 380, 160, 15);
@@ -302,7 +305,7 @@ export default class GameEngine {
         this.p.fill(255, 215, 0); 
         this.p.textSize(26);
         this.p.textStyle(this.p.BOLD);
-        const qText = this.currentQuestion ? `Soal:  ${this.currentQuestion.q} = ?` : "Selesai!";
+        const qText = this.currentQuestion ? `Soal:  ${this.currentQuestion.q} = ?` : "Selesai!";
         this.p.text(qText, 40, 35);
         this.p.stroke(255, 255, 255, 50);
         this.p.strokeWeight(1);
@@ -364,9 +367,12 @@ export default class GameEngine {
         this.p.textSize(50);
         this.p.textStyle(this.p.BOLD);
         
-        let title = "GAME OVER";
-        if (this.lives > 0 && this.questionIndex >= this.questions.length) {
+        let title;
+        // PENGGUNAAN STATUS BARU UNTUK OVERLAY LEVEL COMPLETE
+        if (this.isLevelCompleted) {
             title = "LEVEL COMPLETED!";
+        } else {
+            title = "GAME OVER";
         }
         
         this.p.fill(0,0,0,150);
@@ -385,7 +391,6 @@ export default class GameEngine {
     }
 
     drawMario() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         this.p.push();
         this.p.translate(this.mario.x, this.mario.y);
         if (!this.mario.facingRight) {
@@ -429,7 +434,7 @@ export default class GameEngine {
                 this.mario.isOnGround = false;
                 this.mario.isJumping = true;
                 
-                // 3. PLAY JUMP SOUND
+                // PLAY JUMP SOUND
                 if (this.sounds.jump) this.sounds.jump.play();
             }
         }
@@ -440,16 +445,19 @@ export default class GameEngine {
     }
 
     updateMario() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         this.mario.vy += this.GRAVITY;
         this.mario.y += this.mario.vy;
         this.mario.x += this.mario.dx;
+        
+        // Cek dasar tanah
         if (this.mario.y >= this.GROUND_Y - this.mario.height) {
             this.mario.y = this.GROUND_Y - this.mario.height;
             this.mario.vy = 0;
             this.mario.isOnGround = true;
             this.mario.isJumping = false;
         }
+        
+        // Cek platform
         for (let platform of this.platforms) {
             if (this.isOnPlatform(this.mario, platform)) {
                 this.mario.y = platform.y - this.mario.height;
@@ -463,7 +471,6 @@ export default class GameEngine {
     }
 
     updateClouds() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         this.clouds.forEach(cloud => {
             cloud.x -= cloud.speed;
             if (cloud.x < -150) {
@@ -474,7 +481,6 @@ export default class GameEngine {
     }
 
     updateCoins() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         this.coins.forEach(coin => {
             if (!coin.collected) {
                 coin.animation = (coin.animation + 0.1) % (this.p.PI * 2);
@@ -483,19 +489,28 @@ export default class GameEngine {
     }
 
     checkQuestionBlocks() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
-        if (this.mario.vy >= 0) return;
+        if (this.mario.vy >= 0) return; // Hanya cek jika Mario melompat ke atas
+        
         for (let block of this.blocks) {
             if (this.checkCollision(this.mario, block)) {
+                
+                // Cek apakah tabrakan terjadi dari bawah
+                if (this.mario.y + this.mario.height <= block.y + 10) continue; 
+                
                 this.mario.vy = 0;
                 this.mario.y = block.y + block.height;
+                
                 if (this.isAnswering) return;
+                
                 this.isAnswering = true;
                 block.bumpOffset = 10; 
+                
                 const isCorrect = block.answer === this.currentQuestion.a;
                 this.lastAnswerFeedback = { isCorrect, answer: block.answer, correctAnswer: this.currentQuestion.a };
+                
                 if (isCorrect) this.handleCorrectAnswer();
                 else this.handleWrongAnswer();
+                
                 break;
             }
         }
@@ -509,7 +524,7 @@ export default class GameEngine {
                 this.score += 5;
                 if (this.callbacks.onScoreChange) this.callbacks.onScoreChange(this.score);
                 
-                // 4. PLAY COIN SOUND
+                // PLAY COIN SOUND
                 if (this.sounds.coin) this.sounds.coin.play();
             }
         });
@@ -519,23 +534,32 @@ export default class GameEngine {
         this.score += 20;
         this.coinsCollected += 2;
         
-        // 5. PLAY COIN SOUND (Reward)
+        // PLAY COIN SOUND (Reward)
         if (this.sounds.coin) this.sounds.coin.play();
 
         if (this.callbacks.onScoreChange) this.callbacks.onScoreChange(this.score);
         
+        // Timeout untuk menampilkan feedback jawaban benar (1.5 detik)
         setTimeout(() => {
             this.isAnswering = false;
             this.lastAnswerFeedback = null;
             this.questionIndex++;
+            
             if (this.questionIndex >= this.questions.length) {
+                // Semua level selesai
                 this.isGameOver = true; 
+                this.isLevelCompleted = true; // Set status level complete
                 
-                // 6. PLAY LEVEL COMPLETE SOUND & STOP BGM
+                // PLAY LEVEL COMPLETE SOUND & STOP BGM
                 if (this.sounds.bgm) this.sounds.bgm.stop();
                 if (this.sounds.win) this.sounds.win.play();
 
-                if (this.callbacks.onLevelComplete) this.callbacks.onLevelComplete(this.score);
+                // PENTING: Tunda Panggilan Callback onLevelComplete (3 detik)
+                // Ini memberi waktu pada P5Canvas untuk menampilkan overlay "LEVEL COMPLETED!"
+                setTimeout(() => {
+                    if (this.callbacks.onLevelComplete) this.callbacks.onLevelComplete(this.score);
+                }, 3000); 
+                
             } else {
                 this.loadQuestion();
             }
@@ -546,29 +570,29 @@ export default class GameEngine {
         this.score = Math.max(0, this.score - 5);
         this.lives--;
         
-        // Suara salah/bump bisa ditambahkan disini jika ada (opsional)
-
         if (this.callbacks.onScoreChange) this.callbacks.onScoreChange(this.score);
         
         if (this.lives <= 0) {
             this.isGameOver = true;
+            this.isLevelCompleted = false; // Pastikan status ini salah saat Game Over
             
-            // 7. PLAY GAME OVER SOUND & STOP BGM
+            // PLAY GAME OVER SOUND & STOP BGM
             if (this.sounds.bgm) this.sounds.bgm.stop();
             if (this.sounds.gameover) this.sounds.gameover.play();
 
+            // Panggilan langsung ke onGameOver agar overlay 'GAME OVER' muncul
             if (this.callbacks.onGameOver) this.callbacks.onGameOver(this.score);
         } else {
+            // Jika nyawa masih ada, tampilkan feedback, lalu reset
             setTimeout(() => {
                 this.isAnswering = false;
                 this.lastAnswerFeedback = null;
                 this.resetMarioPosition();
             }, 1500);
         }
-    }   
+    }   
 
     isOnPlatform(mario, platform) {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         return (
             mario.x + mario.width > platform.x &&
             mario.x < platform.x + platform.width &&
@@ -579,7 +603,6 @@ export default class GameEngine {
     }
 
     checkCollision(obj1, obj2) {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         return (
             obj1.x < obj2.x + obj2.width &&
             obj1.x + obj1.width > obj2.x &&
@@ -589,7 +612,6 @@ export default class GameEngine {
     }
 
     resetMarioPosition() {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         this.mario.x = this.canvasWidth * 0.08;
         this.mario.y = this.canvasHeight * 0.7;
         this.mario.vy = 0;
@@ -602,6 +624,7 @@ export default class GameEngine {
         this.score = 0;
         this.questionIndex = 0;
         this.isGameOver = false;
+        this.isLevelCompleted = false; // Reset status
         this.lives = 3;
         this.coinsCollected = 0;
         this.isAnswering = false;
@@ -610,7 +633,7 @@ export default class GameEngine {
         this.generateCoins();
         this.loadQuestion();
         
-        // 8. RESTART BGM
+        // RESTART BGM
         if (this.sounds.bgm) {
             this.sounds.bgm.stop();
             this.sounds.bgm.loop();
@@ -620,7 +643,6 @@ export default class GameEngine {
     }
 
     updateCanvasSize(newWidth, newHeight) {
-        // ... (KODE SAMA SEPERTI SEBELUMNYA) ...
         this.canvasWidth = newWidth;
         this.canvasHeight = newHeight;
         this.SCREEN_WIDTH = newWidth;
@@ -631,6 +653,9 @@ export default class GameEngine {
         this.createCachedAssets();
         this.generateLevel();
         this.generateClouds();
-        this.loadQuestion();
+        // Load question tanpa reset state utama game
+        if (this.currentQuestion) {
+             this.loadQuestion();
+        }
     }
 }

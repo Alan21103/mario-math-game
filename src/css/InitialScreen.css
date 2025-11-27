@@ -9,9 +9,6 @@
   --mario-brown: #8b4513;
   --mario-dark-green: #1a5a1a;
   --shadow-color: rgba(0, 0, 0, 0.5);
-  --tree-dark: #2d5a2d;
-  --tree-medium: #3a7b3a;
-  --tree-light: #4a9a4a;
 }
 
 * {
@@ -122,101 +119,29 @@
     900px 45px 0 50px rgba(255, 255, 255, 0.75);
 }
 
-/* ===== POHON REALISTIS DENGAN BENTUK ORGANIK ===== */
+/* Trees dengan Distribusi yang Lebih Baik */
 .bg-trees {
   z-index: 5;
-  animation: parallax-trees 120s linear infinite;
+  animation: parallax-trees 100s linear infinite;
 }
 
-/* Container untuk pohon-pohon */
 .bg-trees::before {
   content: '';
   position: absolute;
   bottom: 150px;
   left: 0;
   width: 400%;
-  height: 150px;
+  height: 120px;
+  background: 
+    /* Pattern pohon berulang */
+    linear-gradient(90deg, transparent 2%, var(--mario-dark-green) 2%, var(--mario-dark-green) 3%, transparent 3%) 0% 100% / 100px 80px,
+    linear-gradient(90deg, transparent 2%, var(--mario-green) 2%, var(--mario-green) 3%, transparent 3%) 0% 100% / 80px 60px,
+    linear-gradient(90deg, transparent 2%, var(--mario-dark-green) 2%, var(--mario-dark-green) 3%, transparent 3%) 8% 100% / 120px 100px,
+    linear-gradient(90deg, transparent 2%, var(--mario-green) 2%, var(--mario-green) 3%, transparent 3%) 8% 100% / 100px 80px,
+    linear-gradient(90deg, transparent 2%, var(--mario-dark-green) 2%, var(--mario-dark-green) 3%, transparent 3%) 18% 100% / 90px 70px,
+    linear-gradient(90deg, transparent 2%, var(--mario-green) 2%, var(--mario-green) 3%, transparent 3%) 18% 100% / 70px 50px;
+  background-repeat: repeat-x;
 }
-
-/* Pohon Individual dengan Bentuk Lebih Realistis */
-.tree {
-  position: absolute;
-  bottom: 0;
-  animation: tree-parallax 120s linear infinite;
-}
-
-/* Batang Pohon */
-.tree::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  width: 12px;
-  height: 60px;
-  background: linear-gradient(90deg, #8B4513, #A0522D, #8B4513);
-  border-radius: 6px;
-  z-index: 1;
-}
-
-/* Daun Pohon - Bentuk Lebih Organik */
-.tree::after {
-  content: '';
-  position: absolute;
-  bottom: 45px;
-  left: -20px;
-  width: 50px;
-  height: 50px;
-  background: radial-gradient(ellipse at center, var(--tree-light), var(--tree-medium));
-  border-radius: 50% 40% 60% 50%;
-  box-shadow: 
-    inset 0 0 10px rgba(0, 0, 0, 0.2),
-    0 5px 10px rgba(0, 0, 0, 0.3);
-  z-index: 2;
-}
-
-/* Variasi Pohon Kecil */
-.tree-small::before {
-  width: 8px;
-  height: 40px;
-}
-
-.tree-small::after {
-  bottom: 30px;
-  left: -15px;
-  width: 35px;
-  height: 35px;
-}
-
-/* Variasi Pohon Besar */
-.tree-large::before {
-  width: 15px;
-  height: 80px;
-}
-
-.tree-large::after {
-  bottom: 60px;
-  left: -25px;
-  width: 70px;
-  height: 70px;
-  border-radius: 50% 45% 55% 50%;
-}
-
-/* Posisi Pohon yang Tersebar Alami */
-.tree-1 { left: 5%; animation-delay: 0s; }
-.tree-2 { left: 12%; animation-delay: -10s; }
-.tree-3 { left: 20%; animation-delay: -20s; }
-.tree-4 { left: 28%; animation-delay: -30s; }
-.tree-5 { left: 37%; animation-delay: -40s; }
-.tree-6 { left: 45%; animation-delay: -50s; }
-.tree-7 { left: 55%; animation-delay: -60s; }
-.tree-8 { left: 63%; animation-delay: -70s; }
-.tree-9 { left: 72%; animation-delay: -80s; }
-.tree-10 { left: 80%; animation-delay: -90s; }
-.tree-11 { left: 88%; animation-delay: -100s; }
-.tree-12 { left: 95%; animation-delay: -110s; }
-
-/* Pohon dengan variasi ukuran */
-.tree-2, .tree-5, .tree-8, .tree-11 { transform: scale(0.8); }
-.tree-3, .tree-6, .tree-9, .tree-12 { transform: scale(1.2); }
 
 /* ===== CONTENT WRAPPER - POSISI AMAN ===== */
 .content-wrapper {
@@ -618,7 +543,7 @@
   to { transform: translateX(25%); }
 }
 
-@keyframes tree-parallax {
+@keyframes parallax-trees {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
@@ -739,11 +664,6 @@
   .mario-character { left: 5%; bottom: 160px; transform: scale(0.8); }
   .goomba-character { right: 5%; bottom: 160px; transform: scale(0.8); }
   .luigi-character { left: 15%; bottom: 160px; transform: scale(0.8); }
-  
-  /* Kurangi jumlah pohon di mobile */
-  .tree-6, .tree-7, .tree-8, .tree-9, .tree-10, .tree-11, .tree-12 {
-    display: none;
-  }
 }
 
 @media (max-width: 480px) {
@@ -779,3 +699,303 @@ html, body {
   width: 100%;
   height: 100%;
 }
+
+Level Select Styles
+.level-select-overlay {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  animation: slideInUp 0.5s ease-out;
+}
+
+.level-select-content {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px);
+  border-radius: 30px;
+  padding: 50px 40px;
+  border: 5px solid #FFD700;
+  box-shadow: 
+    0 0 40px rgba(255, 215, 0, 0.4),
+    inset 0 0 30px rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+/* Level Title Area */
+.level-title-area {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.level-title-top {
+  display: block;
+  font-size: 1.6rem;
+  color: #FFD700;
+  text-shadow: 3px 3px 0 #000;
+  margin-bottom: 15px;
+  letter-spacing: 4px;
+  font-weight: bold;
+}
+
+.level-title-main {
+  font-size: 3.2rem;
+  color: #FFFFFF;
+  text-shadow: 
+    4px 4px 0 #000,
+    -2px -2px 0 #000,
+    2px -2px 0 #000,
+    -2px 2px 0 #000;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: 2px;
+}
+
+/* Level Select Slogan */
+.level-select-slogan {
+  color: #FFFFFF;
+  text-shadow: 2px 2px 0 #000;
+  font-size: 1.4rem;
+  margin-bottom: 40px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Back Button */
+.back-button {
+  position: absolute;
+  top: -60px;
+  left: 0;
+  background: linear-gradient(145deg, #E52521, #C00000);
+  color: white;
+  border: 4px solid #FFD700;
+  border-radius: 15px;
+  padding: 15px 30px;
+  font-family: 'Super Mario', 'Arial', sans-serif;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.4);
+  text-shadow: 2px 2px 0 #000;
+}
+
+.back-button:hover {
+  background: linear-gradient(145deg, #FF0000, #E52521);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 0 rgba(0,0,0,0.4);
+}
+
+.back-button:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 rgba(0,0,0,0.4);
+}
+
+/* Level Buttons Group */
+.level-buttons-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  margin-top: 15px;
+}
+
+.level-button {
+  position: relative;
+  width: 100%;
+  padding: 25px 30px;
+  border: none;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  text-align: left;
+  box-shadow: 
+    0 8px 0 rgba(0,0,0,0.5),
+    0 12px 25px rgba(0,0,0,0.4);
+}
+
+.level-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 10px 0 rgba(0,0,0,0.5),
+    0 18px 30px rgba(0,0,0,0.5);
+}
+
+.level-button:active {
+  transform: translateY(3px);
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.5),
+    0 6px 15px rgba(0,0,0,0.4);
+}
+
+/* Button Shine Effect */
+.level-button .btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.8s;
+}
+
+.level-button:hover .btn-shine {
+  left: 100%;
+}
+
+/* Level Specific Styles */
+.level-button.easy {
+  background: linear-gradient(145deg, #4CAF50, #388E3C);
+  color: white;
+  border: 5px solid #2E7D32;
+}
+
+.level-button.medium {
+  background: linear-gradient(145deg, #FF9800, #F57C00);
+  color: white;
+  border: 5px solid #EF6C00;
+}
+
+.level-button.hard {
+  background: linear-gradient(145deg, #F44336, #D32F2F);
+  color: white;
+  border: 5px solid #C62828;
+}
+
+.level-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.5));
+}
+
+.level-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.level-text strong {
+  font-size: 1.7rem;
+  margin-bottom: 8px;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.6);
+  letter-spacing: 1px;
+}
+
+.level-text small {
+  font-size: 1.1rem;
+  opacity: 0.95;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.6);
+  font-weight: normal;
+}
+
+/* Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design untuk Level Select */
+@media (max-width: 768px) {
+  .level-select-overlay {
+    max-width: 500px;
+  }
+  
+  .level-select-content {
+    padding: 40px 30px;
+    margin: 0 20px;
+    border-radius: 25px;
+  }
+  
+  .level-title-main {
+    font-size: 2.8rem;
+  }
+  
+  .level-title-top {
+    font-size: 1.4rem;
+  }
+  
+  .level-select-slogan {
+    font-size: 1.3rem;
+  }
+  
+  .level-button {
+    font-size: 1.3rem;
+    padding: 22px 25px;
+    gap: 20px;
+  }
+  
+  .level-text strong {
+    font-size: 1.5rem;
+  }
+  
+  .level-text small {
+    font-size: 1rem;
+  }
+  
+  .level-icon {
+    font-size: 2.2rem;
+  }
+  
+  .back-button {
+    top: -55px;
+    left: 20px;
+    font-size: 1.1rem;
+    padding: 12px 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .level-select-overlay {
+    max-width: 400px;
+  }
+  
+  .level-select-content {
+    padding: 30px 25px;
+    margin: 0 15px;
+  }
+  
+  .level-title-main {
+    font-size: 2.2rem;
+  }
+  
+  .level-title-top {
+    font-size: 1.2rem;
+  }
+  
+  .level-buttons-group {
+    gap: 18px;
+  }
+  
+  .level-button {
+    padding: 20px 22px;
+    gap: 18px;
+  }
+  
+  .level-text strong {
+    font-size: 1.3rem;
+  }
+  
+  .back-button {
+    top: -50px;
+    left: 15px;
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+}
+
