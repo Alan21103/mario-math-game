@@ -1,83 +1,94 @@
-/* Container Utama */
+/* ------------------------------------------- */
+/* LevelSelect.css - Tema Pixel Art Retro      */
+/* ------------------------------------------- */
+
+
+/* 1. Kontainer Utama */
 .level-select-container {
-  font-family: 'Poppins', sans-serif; 
-  text-align: center;
-  padding: 40px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #e0f7fa, #ffffff); 
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  max-width: 550px;
-  margin: 50px auto;
-  animation: fadeIn 0.8s ease-out; 
+    background-color: #2c3e50; /* Warna dasar gelap (biru tua) */
+    color: #ecf0f1; /* Warna teks terang */
+    padding: 30px;
+    border: 5px solid #bdc3c7; /* Garis tepi tebal */
+    border-radius: 0; /* Tepian tajam khas pixel */
+    box-shadow: 
+        5px 5px 0 0 #34495e, /* Bayangan piksel tebal untuk kedalaman */
+        10px 10px 0 0 #2c3e50;
+    font-family: 'Press Start 2P', cursive; /* Ganti dengan font pixel yang Anda impor */
+    text-align: center;
+    max-width: 500px;
+    margin: 50px auto;
 }
 
-/* Animasi Fade In */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Judul */
+/* 2. Judul dan Subteks */
 .level-select-heading {
-  color: #007bff; 
-  margin-bottom: 10px;
-  font-size: 2.5em;
-  font-weight: 700;
+    font-size: 24px;
+    color: #f1c40f; /* Kuning emas cerah */
+    margin-bottom: 10px;
+    text-shadow: 2px 2px #c0392b; /* Bayangan teks merah */
 }
 
-/* Subteks */
 .level-select-subtext {
-  color: #6c757d;
-  margin-bottom: 35px;
-  font-size: 1.1em;
+    font-size: 14px;
+    margin-bottom: 30px;
+    color: #95a5a6;
 }
 
-/* Grup Tombol */
+/* 3. Grup Tombol */
 .level-buttons-group {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* Gaya Dasar Tombol */
+/* 4. Gaya Tombol Umum */
 .level-button {
-  padding: 18px 35px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2em;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    font-family: 'Press Start 2P', cursive;
+    font-size: 16px;
+    padding: 15px 25px;
+    border-radius: 0;
+    border: 3px solid; /* Garis tepi tombol */
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 0 0 #000; /* Bayangan piksel dasar */
+    transform: translate(0, 0); /* Untuk efek "tekan" */
 }
 
-/* Efek HOVER: Mengangkat dan mengubah skala */
+/* Efek Hover dan Active (Tekan) */
 .level-button:hover {
-  transform: translateY(-4px) scale(1.02); 
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 5px 5px 0 0 #000;
 }
 
-/* Efek ACTIVE: Menekan tombol */
 .level-button:active {
-  transform: translateY(1px); 
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* Simulasi tombol tertekan */
+    box-shadow: 0 0 0 0 #000;
+    transform: translate(3px, 3px); /* Bergerak ke bawah dan kanan sebesar bayangan */
 }
 
-/* Gaya Spesifik Level: Mudah (Hijau) */
+/* 5. Warna Spesifik Level */
+
+/* Tombol Mudah (Easy) - Hijau */
 .level-button.easy {
-  background-color: #28a745;
-  color: white;
+    background-color: #2ecc71;
+    border-color: #27ae60;
+    color: #1abc9c;
 }
 
-/* Gaya Spesifik Level: Sedang (Kuning/Oranye) */
+/* Tombol Sedang (Medium) - Kuning/Oranye */
 .level-button.medium {
-  background-color: #ffc107;
-  color: #343a40;
+    background-color: #f39c12;
+    border-color: #e67e22;
+    color: #c0392b;
 }
 
-/* Gaya Spesifik Level: Sulit (Merah) */
+/* Tombol Sulit (Hard) - Merah */
 .level-button.hard {
-  background-color: #dc3545;
-  color: white;
+    background-color: #e74c3c;
+    border-color: #c0392b;
+    color: #ecf0f1;
+}
+
+/* Pastikan Tombol memiliki tinggi yang sama */
+.level-button > * {
+    display: inline-block;
 }

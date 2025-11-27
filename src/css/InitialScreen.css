@@ -9,6 +9,9 @@
   --mario-brown: #8b4513;
   --mario-dark-green: #1a5a1a;
   --shadow-color: rgba(0, 0, 0, 0.5);
+  --tree-dark: #2d5a2d;
+  --tree-medium: #3a7b3a;
+  --tree-light: #4a9a4a;
 }
 
 * {
@@ -119,29 +122,101 @@
     900px 45px 0 50px rgba(255, 255, 255, 0.75);
 }
 
-/* Trees dengan Distribusi yang Lebih Baik */
+/* ===== POHON REALISTIS DENGAN BENTUK ORGANIK ===== */
 .bg-trees {
   z-index: 5;
-  animation: parallax-trees 100s linear infinite;
+  animation: parallax-trees 120s linear infinite;
 }
 
+/* Container untuk pohon-pohon */
 .bg-trees::before {
   content: '';
   position: absolute;
   bottom: 150px;
   left: 0;
   width: 400%;
-  height: 120px;
-  background: 
-    /* Pattern pohon berulang */
-    linear-gradient(90deg, transparent 2%, var(--mario-dark-green) 2%, var(--mario-dark-green) 3%, transparent 3%) 0% 100% / 100px 80px,
-    linear-gradient(90deg, transparent 2%, var(--mario-green) 2%, var(--mario-green) 3%, transparent 3%) 0% 100% / 80px 60px,
-    linear-gradient(90deg, transparent 2%, var(--mario-dark-green) 2%, var(--mario-dark-green) 3%, transparent 3%) 8% 100% / 120px 100px,
-    linear-gradient(90deg, transparent 2%, var(--mario-green) 2%, var(--mario-green) 3%, transparent 3%) 8% 100% / 100px 80px,
-    linear-gradient(90deg, transparent 2%, var(--mario-dark-green) 2%, var(--mario-dark-green) 3%, transparent 3%) 18% 100% / 90px 70px,
-    linear-gradient(90deg, transparent 2%, var(--mario-green) 2%, var(--mario-green) 3%, transparent 3%) 18% 100% / 70px 50px;
-  background-repeat: repeat-x;
+  height: 150px;
 }
+
+/* Pohon Individual dengan Bentuk Lebih Realistis */
+.tree {
+  position: absolute;
+  bottom: 0;
+  animation: tree-parallax 120s linear infinite;
+}
+
+/* Batang Pohon */
+.tree::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 12px;
+  height: 60px;
+  background: linear-gradient(90deg, #8B4513, #A0522D, #8B4513);
+  border-radius: 6px;
+  z-index: 1;
+}
+
+/* Daun Pohon - Bentuk Lebih Organik */
+.tree::after {
+  content: '';
+  position: absolute;
+  bottom: 45px;
+  left: -20px;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(ellipse at center, var(--tree-light), var(--tree-medium));
+  border-radius: 50% 40% 60% 50%;
+  box-shadow: 
+    inset 0 0 10px rgba(0, 0, 0, 0.2),
+    0 5px 10px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+/* Variasi Pohon Kecil */
+.tree-small::before {
+  width: 8px;
+  height: 40px;
+}
+
+.tree-small::after {
+  bottom: 30px;
+  left: -15px;
+  width: 35px;
+  height: 35px;
+}
+
+/* Variasi Pohon Besar */
+.tree-large::before {
+  width: 15px;
+  height: 80px;
+}
+
+.tree-large::after {
+  bottom: 60px;
+  left: -25px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50% 45% 55% 50%;
+}
+
+/* Posisi Pohon yang Tersebar Alami */
+.tree-1 { left: 5%; animation-delay: 0s; }
+.tree-2 { left: 12%; animation-delay: -10s; }
+.tree-3 { left: 20%; animation-delay: -20s; }
+.tree-4 { left: 28%; animation-delay: -30s; }
+.tree-5 { left: 37%; animation-delay: -40s; }
+.tree-6 { left: 45%; animation-delay: -50s; }
+.tree-7 { left: 55%; animation-delay: -60s; }
+.tree-8 { left: 63%; animation-delay: -70s; }
+.tree-9 { left: 72%; animation-delay: -80s; }
+.tree-10 { left: 80%; animation-delay: -90s; }
+.tree-11 { left: 88%; animation-delay: -100s; }
+.tree-12 { left: 95%; animation-delay: -110s; }
+
+/* Pohon dengan variasi ukuran */
+.tree-2, .tree-5, .tree-8, .tree-11 { transform: scale(0.8); }
+.tree-3, .tree-6, .tree-9, .tree-12 { transform: scale(1.2); }
 
 /* ===== CONTENT WRAPPER - POSISI AMAN ===== */
 .content-wrapper {
@@ -543,7 +618,7 @@
   to { transform: translateX(25%); }
 }
 
-@keyframes parallax-trees {
+@keyframes tree-parallax {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
@@ -664,6 +739,11 @@
   .mario-character { left: 5%; bottom: 160px; transform: scale(0.8); }
   .goomba-character { right: 5%; bottom: 160px; transform: scale(0.8); }
   .luigi-character { left: 15%; bottom: 160px; transform: scale(0.8); }
+  
+  /* Kurangi jumlah pohon di mobile */
+  .tree-6, .tree-7, .tree-8, .tree-9, .tree-10, .tree-11, .tree-12 {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {

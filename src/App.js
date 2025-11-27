@@ -1,164 +1,92 @@
-import React, { useState, useCallback, useEffect } from 'react'; 
+import React, { useState, useCallback } from 'react'; 
 import P5Canvas from './components/P5Canvas';
 import LevelSelect from './components/LevelSelect';
-import InitialScreen from './components/InitialScreen'; // <-- IMPORT BARU
+import InitialScreen from './components/InitialScreen'; 
 import { QUESTIONS } from './data/questions';
-import GameScreen from './components/GameScreen';
 import './App.css';
 
 function App() {
-  // === STATE BARU ===
-  const [showInitialScreen, setShowInitialScreen] = useState(true); // <-- STATE UNTUK KONTROL TAMPILAN AWAL
-  
-  // === STATE LAMA ===
+  const [showInitialScreen, setShowInitialScreen] = useState(true);
   const [currentLevelKey, setCurrentLevelKey] = useState(null); 
   const [score, setScore] = useState(0);
-  const [gameStatus, setGameStatus] = useState('Pilih Level'); 
-  const [keyInput, setKeyInput] = useState({ left: false, right: false, jump: false }); 
-  
-  // ... (useEffect untuk Key Listener tetap sama, tidak perlu diubah) ...
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (gameStatus !== 'Bermain') return;
-      
-      if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-        e.preventDefault(); 
-      }
-      
-      let updated = false;
-      let newState = { ...keyInput };
+  const [gameStatus, setGameStatus] = useState('Pilih Level'); // 'Pilih Level', 'Bermain', 'Menang', 'Kalah'
 
-      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-        newState.right = true;
-        updated = true;
-      } 
-      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-        newState.left = true;
-        updated = true;
-      } 
-      if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowUp') {
-        newState.jump = true;
-        updated = true;
-      }
-
-      if (updated) {
-        setKeyInput(newState);
-      }
-    };
-
-    const handleKeyUp = (e) => {
-      if (gameStatus !== 'Bermain') return;
-      
-      let updated = false;
-      let newState = { ...keyInput };
-
-      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-        newState.right = false;
-        updated = true;
-      } 
-      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-        newState.left = false;
-        updated = true;
-      } 
-      if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowUp') {
-        newState.jump = false;
-        updated = true;
-      }
-
-      if (updated) {
-        setKeyInput(newState);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [gameStatus, keyInput]);
-
-  // === HANDLER BARU ===
-  const handleStartInitial = () => {
-    setShowInitialScreen(false); // Sembunyikan InitialScreen
-    // Tidak perlu mengubah gameStatus di sini, karena 'Pilih Level' adalah default setelah InitialScreen.
-  };
+  const handleStartInitial = () => setShowInitialScreen(false);
 
   const handleSelectLevel = (levelKey) => {
     setCurrentLevelKey(levelKey);
     setScore(0);
     setGameStatus('Bermain');
-    setKeyInput({ left: false, right: false, jump: false });
   };
 
-  const handleScoreChange = useCallback((newScore) => {
-    setScore(newScore);
-  }, []);
-
+  const handleScoreChange = useCallback((newScore) => setScore(newScore), []);
+  
   const handleLevelComplete = useCallback((finalScore) => {
     setScore(finalScore);
-    setGameStatus('Selesai');
+    setGameStatus('Menang');
+  }, []);
+
+  const handleGameOver = useCallback((finalScore) => {
+    setScore(finalScore);
+    setGameStatus('Kalah');
   }, []);
 
   const handleRestart = () => {
     setCurrentLevelKey(null);
     setScore(0);
     setGameStatus('Pilih Level');
-    setKeyInput({ left: false, right: false, jump: false });
+  }
+
+  const handleRetry = () => {
+    // Trik simple: set status null sebentar lalu 'Bermain' lagi untuk re-mount P5Canvas
+    setGameStatus('Loading');
+    setTimeout(() => {
+        setScore(0);
+        setGameStatus('Bermain');
+    }, 100);
   }
 
   const levelData = currentLevelKey ? QUESTIONS[currentLevelKey] : [];
 
-  // === RENDERING UTAMA ===
   return (
     <div className="App">
+      {showInitialScreen && <InitialScreen onStartGame={handleStartInitial} />}
       
-      {/* 1. TAMPILAN AWAL */}
-      {showInitialScreen && (
-        <InitialScreen onStartGame={handleStartInitial} />
-      )}
-      
-      {/* 2. KONTEN GAME (Ditampilkan setelah InitialScreen selesai) */}
       {!showInitialScreen && (
         <>
-          {/* Header sederhana saat GameScreen aktif (opsional, bisa diganti dengan komponen Header.js) */}
-          <h1>🎓 Game Matematika P5.js & React</h1> 
-          
-          {/* A. BERMAIN */}
           {gameStatus === 'Bermain' && (
             <div className="game-screen">
-              <h3>Level: {currentLevelKey ? currentLevelKey.replace('_', ' ') : ''} | Skor: {score}</h3>
-              
               <div className="game-container">
                 <P5Canvas 
                   levelData={levelData} 
                   onScoreChange={handleScoreChange}
                   onLevelComplete={handleLevelComplete}
-                  keyInput={keyInput} 
+                  onGameOver={handleGameOver} 
                 />
               </div>
-              
-              <p className="controls-info">
-                Gunakan <strong>Panah Kiri/Kanan (A/D)</strong> untuk bergerak, 
-                <strong> Spasi/Enter/Panah Atas</strong> untuk melompat!
-              </p>
             </div>
           )}
 
-          {/* B. PILIH LEVEL */}
-          {gameStatus === 'Pilih Level' && (
-            <LevelSelect onSelectLevel={handleSelectLevel} />
+          {gameStatus === 'Pilih Level' && <LevelSelect onSelectLevel={handleSelectLevel} />}
+
+          {gameStatus === 'Menang' && (
+            <div className="completion-screen win">
+              <h2>🎉 Level Selesai! 🎉</h2>
+              <p>Hebat! Kamu menyelesaikan semua soal.</p>
+              <div className="final-score">Skor Akhir: {score}</div>
+              <button onClick={handleRestart} className="btn-primary">Menu Utama</button>
+            </div>
           )}
 
-          {/* C. SELESAI */}
-          {gameStatus === 'Selesai' && (
-            <div className="completion-screen">
-              <h2>🎉 Level Selesai! 🎉</h2>
-              <p>Skor Akhir Anda: <strong>{score}</strong></p>
-              <button onClick={handleRestart}>
-                Main Lagi
-              </button>
+          {gameStatus === 'Kalah' && (
+            <div className="completion-screen lose">
+              <h2>💀 Game Over 💀</h2>
+              <p>Nyawa kamu habis! Jangan menyerah.</p>
+              <div className="final-score">Skor Akhir: {score}</div>
+              <div className="button-group">
+                <button onClick={handleRetry} className="btn-secondary">Coba Lagi</button>
+                <button onClick={handleRestart} className="btn-primary">Menu Utama</button>
+              </div>
             </div>
           )}
         </>

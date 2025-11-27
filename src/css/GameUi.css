@@ -1,0 +1,27 @@
+.game-ui-container {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 20; display: flex; flex-direction: column; justify-content: space-between;
+}
+.game-info-panel {
+    margin: 20px; background: rgba(0, 0, 0, 0.7); border: 2px solid #fbd000;
+    border-radius: 10px; padding: 15px; pointer-events: auto; max-width: 300px;
+}
+.info-section h3 { color: #fbd000; font-size: 0.8rem; margin: 0 0 5px 0; }
+.question-display { color: white; font-size: 1.2rem; font-weight: bold; }
+.stats-section { margin-top: 10px; }
+.stat-row { display: flex; gap: 15px; margin-bottom: 5px; }
+.stat { color: white; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+
+.answer-feedback {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9); border: 4px solid; border-radius: 15px;
+    padding: 20px; text-align: center; color: white;
+}
+.answer-feedback.correct { border-color: #4CAF50; }
+.answer-feedback.wrong { border-color: #f44336; }
+.correct-answer-text { color: yellow; font-size: 0.8rem; }
+
+.mini-instructions {
+    align-self: center; margin-bottom: 20px; background: rgba(0,0,0,0.5);
+    padding: 10px 20px; border-radius: 20px; color: white; text-align: center;
+}
